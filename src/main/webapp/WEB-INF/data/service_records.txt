@@ -1,0 +1,4 @@
+b75a344f-5ccb-497a-81db-cf330670f168,CAR001,default-user-001,Tire Rotation,2025-06-11,2032-03-31,2000.0,,50.0,false
+eb8b669c-b3bc-4795-8e18-a6d968721f0f,CAR003,default-user-001,Battery Replacement,2025-05-07,2029-06-15,24000.0,,2000.0,true
+48298702-70f1-447a-92f2-29884a084de8,CAR002,default-user-001,General Inspection,2025-06-04,2026-02-03,500000.0,,5000.0,false
+147ee32b-99d7-46ca-b7be-68c84bcfd398,CAR003,default-user-001,Wheel Alignment,2025-05-13,2026-08-06,2300.0,,600.0,false

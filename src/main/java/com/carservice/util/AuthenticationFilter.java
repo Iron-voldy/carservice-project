@@ -20,17 +20,27 @@ public class AuthenticationFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        HttpSession session = httpRequest.getSession(true);
 
-        // Set a default user ID for testing purposes
-        if (session.getAttribute("userId") == null) {
+        // Get session without creating a new one if it doesn't exist
+        HttpSession session = httpRequest.getSession(false);
+
+        if (session == null) {
+            // Create a new session if one doesn't exist
+            session = httpRequest.getSession(true);
+            session.setAttribute("userId", "default-user-001");
+            session.setAttribute("username", "Test User");
+            session.setAttribute("isPremiumUser", false);
+        } else if (session.getAttribute("userId") == null) {
+            // Set default user attributes if userId is not set
             session.setAttribute("userId", "default-user-001");
             session.setAttribute("username", "Test User");
             session.setAttribute("isPremiumUser", false);
         }
 
-        // Continue with the request
+        // Continue the filter chain BEFORE writing to the response
         chain.doFilter(request, response);
+
+        // Don't perform any operations on the response after the chain is processed
     }
 
     @Override

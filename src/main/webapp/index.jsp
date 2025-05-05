@@ -7,190 +7,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Service and Maintenance Tracker</title>
-    <link rel="stylesheet" href="<c:url value='/css/styles.css'/>">
+    <title>CarCare - Dashboard</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Car Service and Maintenance Tracker</h1>
-            <nav>
-                <ul>
-                    <li><a href="<c:url value='/index.jsp'/>" class="active">Home</a></li>
-                    <li><a href="<c:url value='/service-history'/>">Service History</a></li>
-                    <li><a href="<c:url value='/upcoming-maintenance'/>">Upcoming Maintenance</a></li>
-                    <li><a href="<c:url value='/profile'/>">Your Profile</a></li>
-                    <c:choose>
-                        <c:when test="${empty sessionScope.userId}">
-                            <li><a href="<c:url value='/login'/>">Login</a></li>
-                            <li><a href="<c:url value='/register'/>">Register</a></li>
-                        </c:when>
-                        <c:otherwise>
-                            <li><a href="<c:url value='/logout'/>">Logout</a></li>
-                        </c:otherwise>
-                    </c:choose>
-                </ul>
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Top Navigation Bar -->
+        <header class="top-nav">
+            <div class="logo-section">
+                <a href="${pageContext.request.contextPath}/index.jsp" class="logo">
+                    <i class="fas fa-car"></i> CarCare
+                </a>
+            </div>
+            <nav class="nav-links">
+                <a href="${pageContext.request.contextPath}/index.jsp" class="nav-link active">
+                    <i class="fas fa-home"></i> Services
+                </a>
+                <a href="${pageContext.request.contextPath}/service-history" class="nav-link">
+                    <i class="fas fa-car"></i> My Vehicles
+                </a>
+                <a href="${pageContext.request.contextPath}/upcoming-maintenance" class="nav-link">
+                    <i class="fas fa-history"></i> History
+                </a>
             </nav>
+            <div class="user-section">
+                <c:choose>
+                    <c:when test="${empty sessionScope.userId}">
+                        <a href="${pageContext.request.contextPath}/login" class="btn btn-outline">Login</a>
+                        <a href="${pageContext.request.contextPath}/register" class="btn btn-outline">Register</a>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="dropdown">
+                            <button class="btn btn-outline dropdown-toggle">
+                                <i class="fas fa-user-circle"></i> ${sessionScope.username}
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="dropdown-content">
+                                <a href="${pageContext.request.contextPath}/profile">Profile</a>
+                                <a href="${pageContext.request.contextPath}/logout">Logout</a>
+                            </div>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
         </header>
 
-        <main>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                <a href="${pageContext.request.contextPath}/add-service" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> New Service
+                </a>
+            </div>
+
+            <!-- Alert Messages -->
             <c:if test="${not empty sessionScope.successMessage}">
-                <div class="success-message">
-                    <p>${sessionScope.successMessage}</p>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> ${sessionScope.successMessage}
+                    <button class="close-btn"><i class="fas fa-times"></i></button>
                 </div>
                 <c:remove var="successMessage" scope="session" />
             </c:if>
 
             <c:if test="${not empty sessionScope.errorMessage}">
-                <div class="error-message">
-                    <p>${sessionScope.errorMessage}</p>
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i> ${sessionScope.errorMessage}
+                    <button class="close-btn"><i class="fas fa-times"></i></button>
                 </div>
                 <c:remove var="errorMessage" scope="session" />
             </c:if>
 
-            <section class="welcome-section">
-                <div class="welcome-content">
-                    <h2>Welcome to Car Service and Maintenance Tracker</h2>
-                    <p>Keep your vehicles in top condition by tracking all your service and maintenance records in one place.</p>
-
-                    <c:choose>
-                        <c:when test="${empty sessionScope.userId}">
-                            <div class="cta-buttons">
-                                <a href="<c:url value='/login'/>" class="btn btn-primary">Login</a>
-                                <a href="<c:url value='/register'/>" class="btn btn-secondary">Register</a>
-                            </div>
-                            <p class="login-prompt">Login or register to start tracking your vehicle maintenance.</p>
-                        </c:when>
-                        <c:otherwise>
-                            <div class="quick-links">
-                                <a href="<c:url value='/add-service'/>" class="btn btn-primary">Add New Service Record</a>
-                                <a href="<c:url value='/upcoming-maintenance'/>" class="btn btn-secondary">View Upcoming Maintenance</a>
-                                <a href="<c:url value='/service-history'/>" class="btn btn-secondary">View Service History</a>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <div class="welcome-icon">
+                    <i class="fas fa-user-circle"></i>
                 </div>
-                <div class="welcome-image">
-                    <img src="<c:url value='/images/car-maintenance.jpg'/>" alt="Car Maintenance Illustration" onerror="this.style.display='none'">
-                </div>
-            </section>
-
-            <c:if test="${not empty sessionScope.userId}">
-                <section class="dashboard-section">
-                    <h2>Your Maintenance Dashboard</h2>
-
-                    <div class="dashboard-cards">
-                        <jsp:include page="/upcoming-maintenance?component=dashboard" />
-
-                        <div class="dashboard-card">
-                            <h3>Recent Services</h3>
-                            <c:set var="recentServicesCount" value="0" />
-
-                            <c:if test="${not empty recentServices && recentServices.size() > 0}">
-                                <ul class="recent-services-list">
-                                    <c:forEach var="record" items="${recentServices}" end="4">
-                                        <c:set var="recentServicesCount" value="${recentServicesCount + 1}" />
-                                        <li>
-                                            <span class="service-date"><fmt:formatDate value="${record.serviceDate}" pattern="MM/dd/yyyy" /></span>
-                                            <span class="service-type">${record.serviceType.description}</span>
-                                            <span class="service-car">Car: ${record.carId}</span>
-                                        </li>
-                                    </c:forEach>
-                                </ul>
-
-                                <c:if test="${recentServicesCount == 0}">
-                                    <p class="no-data">No recent service records found.</p>
-                                </c:if>
-
-                                <a href="<c:url value='/service-history'/>" class="view-all-link">View All Service Records</a>
-                            </c:if>
-                        </div>
-
-                        <div class="dashboard-card">
-                            <h3>Maintenance Statistics</h3>
-                            <div class="stats-container">
-                                <div class="stat-item">
-                                    <span class="stat-value">${serviceCount}</span>
-                                    <span class="stat-label">Total Services</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-value">${overdueCount}</span>
-                                    <span class="stat-label">Overdue Services</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-value">${upcomingCount}</span>
-                                    <span class="stat-label">Upcoming Services</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-value">$${totalCost}</span>
-                                    <span class="stat-label">Total Spent</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </c:if>
-
-            <section class="features-section">
-                <h2>Key Features</h2>
-
-                <div class="feature-cards">
-                    <div class="feature-card">
-                        <div class="feature-icon">📅</div>
-                        <h3>Service Reminders</h3>
-                        <p>Never miss a service with automated reminders based on date or mileage.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">📊</div>
-                        <h3>Service History</h3>
-                        <p>Track all maintenance records and service history for each of your vehicles.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">💰</div>
-                        <h3>Cost Tracking</h3>
-                        <p>Keep track of all maintenance costs and analyze your spending over time.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">📱</div>
-                        <h3>Mobile Friendly</h3>
-                        <p>Access your maintenance records anytime, anywhere on any device.</p>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Car Service Tracker</h3>
-                    <p>Keeping your vehicles in top condition</p>
-                </div>
-
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="<c:url value='/index.jsp'/>">Home</a></li>
-                        <li><a href="<c:url value='/service-history'/>">Service History</a></li>
-                        <li><a href="<c:url value='/upcoming-maintenance'/>">Upcoming Maintenance</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h3>Contact Us</h3>
-                    <p>Email: support@carservicetracker.com</p>
-                    <p>Phone: (123) 456-7890</p>
+                <div class="welcome-text">
+                    <h2>Welcome back, ${sessionScope.username}!</h2>
+                    <p>You have upcoming services and alerts</p>
                 </div>
             </div>
 
-            <div class="footer-bottom">
-                <p>&copy; 2025 Car Service and Maintenance Tracker - All Rights Reserved</p>
+            <!-- Dashboard Cards -->
+            <div class="dashboard-cards">
+                <!-- Vehicles Card -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Vehicles</h3>
+                    </div>
+                    <div class="card-body">
+                        <c:if test="${empty vehicles}">
+                            <div class="empty-state">
+                                <p>No vehicles added yet</p>
+                                <a href="${pageContext.request.contextPath}/add-vehicle" class="btn btn-outline-primary">Add Vehicle</a>
+                            </div>
+                        </c:if>
+                        <c:if test="${not empty vehicles}">
+                            <ul class="vehicle-list">
+                                <c:forEach var="vehicle" items="${vehicles}">
+                                    <li>
+                                        <span class="vehicle-name">${vehicle.make} ${vehicle.model}</span>
+                                        <span class="vehicle-year">${vehicle.year}</span>
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                        </c:if>
+                    </div>
+                </div>
+
+                <!-- Upcoming Services Card -->
+                <div class="dashboard-card highlight">
+                    <div class="card-header">
+                        <h3>Upcoming Services</h3>
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <div class="card-body">
+                        <c:if test="${empty upcomingServices || upcomingServices.size() == 0}">
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <p>No upcoming services scheduled yet</p>
+                                <a href="${pageContext.request.contextPath}/schedule-service" class="btn btn-primary">Schedule Service</a>
+                            </div>
+                        </c:if>
+                        <c:if test="${not empty upcomingServices && upcomingServices.size() > 0}">
+                            <ul class="service-list">
+                                <c:forEach var="service" items="${upcomingServices}" end="4">
+                                    <li>
+                                        <div class="service-info">
+                                            <span class="service-type">${service.serviceType.description}</span>
+                                            <span class="service-date"><fmt:formatDate value="${service.serviceDate}" pattern="MMM dd, yyyy" /></span>
+                                        </div>
+                                        <span class="service-car">${service.carId}</span>
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                            <a href="${pageContext.request.contextPath}/upcoming-maintenance" class="view-all">View All</a>
+                        </c:if>
+                    </div>
+                </div>
+
+                <!-- Alerts Card -->
+                <div class="dashboard-card alert-card">
+                    <div class="card-header">
+                        <h3>Urgent Alerts</h3>
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="card-body">
+                        <c:if test="${empty overdueServices || overdueServices.size() == 0}">
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <p>No urgent alerts at this time</p>
+                            </div>
+                        </c:if>
+                        <c:if test="${not empty overdueServices && overdueServices.size() > 0}">
+                            <ul class="alert-list">
+                                <c:forEach var="service" items="${overdueServices}" end="4">
+                                    <li>
+                                        <div class="alert-icon"><i class="fas fa-exclamation-circle"></i></div>
+                                        <div class="alert-info">
+                                            <span class="alert-title">${service.serviceType.description} Overdue</span>
+                                            <span class="alert-desc">Vehicle: ${service.carId}</span>
+                                            <span class="alert-date">Due: <fmt:formatDate value="${service.nextServiceDate}" pattern="MMM dd, yyyy" /></span>
+                                        </div>
+                                        <a href="${pageContext.request.contextPath}/schedule-service?recordId=${service.recordId}" class="btn btn-sm btn-danger">Schedule</a>
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                            <a href="${pageContext.request.contextPath}/upcoming-maintenance" class="view-all">View All</a>
+                        </c:if>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Services Section -->
+            <section class="recent-services">
+                <div class="section-header">
+                    <h2>Recent Services</h2>
+                    <a href="${pageContext.request.contextPath}/service-history" class="view-all">View All</a>
+                </div>
+                <c:if test="${empty recentServices || recentServices.size() == 0}">
+                    <div class="empty-state">
+                        <p>No recent service records found</p>
+                        <a href="${pageContext.request.contextPath}/add-service" class="btn btn-primary">Add Service Record</a>
+                    </div>
+                </c:if>
+                <c:if test="${not empty recentServices && recentServices.size() > 0}">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Service Date</th>
+                                    <th>Vehicle</th>
+                                    <th>Service Type</th>
+                                    <th>Cost</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="record" items="${recentServices}" end="4">
+                                    <tr>
+                                        <td><fmt:formatDate value="${record.serviceDate}" pattern="MMM dd, yyyy" /></td>
+                                        <td>${record.carId}</td>
+                                        <td>${record.serviceType.description}</td>
+                                        <td>$<fmt:formatNumber value="${record.cost}" pattern="#,##0.00" /></td>
+                                        <td>
+                                            <span class="status-badge ${record.completed ? 'completed' : 'pending'}">
+                                                ${record.completed ? 'Completed' : 'Pending'}
+                                            </span>
+                                        </td>
+                                        <td class="actions">
+                                            <a href="${pageContext.request.contextPath}/update-service?recordId=${record.recordId}" class="action-btn edit-btn" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="${pageContext.request.contextPath}/delete-service?recordId=${record.recordId}" class="action-btn delete-btn" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                </c:if>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2025 CarCare - Car Service Maintenance Tracker</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Contact Us</a>
+                </div>
             </div>
         </footer>
     </div>
 
-    <script src="<c:url value='/js/scripts.js'/>"></script>
+    <script>
+        // Close alert messages
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.parentElement.style.display = 'none';
+            });
+        });
+    </script>
 </body>
 </html>
