@@ -29,12 +29,11 @@ public class AddServiceServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Check if user is logged in
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
-            // Not logged in, redirect to login
-            response.sendRedirect(request.getContextPath() + "/login");
-            return;
+        // Ensure a session exists with default user
+        HttpSession session = request.getSession(true);
+        if (session.getAttribute("userId") == null) {
+            session.setAttribute("userId", "default-user-001");
+            session.setAttribute("username", "Test User");
         }
 
         // Add service types to request for dropdown
@@ -50,17 +49,19 @@ public class AddServiceServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Check if user is logged in
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
-            // Not logged in, redirect to login
-            response.sendRedirect(request.getContextPath() + "/login");
-            return;
+        // Ensure a session exists with default user
+        HttpSession session = request.getSession(true);
+        if (session.getAttribute("userId") == null) {
+            session.setAttribute("userId", "default-user-001");
+            session.setAttribute("username", "Test User");
         }
 
         try {
             // Get user ID from session
             String userId = (String) session.getAttribute("userId");
+
+            // Rest of your code remains the same
+            // ...
 
             // Get form parameters
             String carId = request.getParameter("carId");

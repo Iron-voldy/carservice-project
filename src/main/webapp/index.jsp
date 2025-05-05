@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Service and Maintenance Tracker</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
+    <link rel="stylesheet" href="<c:url value='/css/styles.css'/>">
 </head>
 <body>
     <div class="container">
@@ -16,17 +16,17 @@
             <h1>Car Service and Maintenance Tracker</h1>
             <nav>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/index.jsp" class="active">Home</a></li>
-                    <li><a href="${pageContext.request.contextPath}/service-history">Service History</a></li>
-                    <li><a href="${pageContext.request.contextPath}/upcoming-maintenance">Upcoming Maintenance</a></li>
-                    <li><a href="${pageContext.request.contextPath}/profile">Your Profile</a></li>
+                    <li><a href="<c:url value='/index.jsp'/>" class="active">Home</a></li>
+                    <li><a href="<c:url value='/service-history'/>">Service History</a></li>
+                    <li><a href="<c:url value='/upcoming-maintenance'/>">Upcoming Maintenance</a></li>
+                    <li><a href="<c:url value='/profile'/>">Your Profile</a></li>
                     <c:choose>
                         <c:when test="${empty sessionScope.userId}">
-                            <li><a href="${pageContext.request.contextPath}/login">Login</a></li>
-                            <li><a href="${pageContext.request.contextPath}/register">Register</a></li>
+                            <li><a href="<c:url value='/login'/>">Login</a></li>
+                            <li><a href="<c:url value='/register'/>">Register</a></li>
                         </c:when>
                         <c:otherwise>
-                            <li><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
+                            <li><a href="<c:url value='/logout'/>">Logout</a></li>
                         </c:otherwise>
                     </c:choose>
                 </ul>
@@ -56,22 +56,22 @@
                     <c:choose>
                         <c:when test="${empty sessionScope.userId}">
                             <div class="cta-buttons">
-                                <a href="${pageContext.request.contextPath}/login" class="btn btn-primary">Login</a>
-                                <a href="${pageContext.request.contextPath}/register" class="btn btn-secondary">Register</a>
+                                <a href="<c:url value='/login'/>" class="btn btn-primary">Login</a>
+                                <a href="<c:url value='/register'/>" class="btn btn-secondary">Register</a>
                             </div>
                             <p class="login-prompt">Login or register to start tracking your vehicle maintenance.</p>
                         </c:when>
                         <c:otherwise>
                             <div class="quick-links">
-                                <a href="${pageContext.request.contextPath}/add-service" class="btn btn-primary">Add New Service Record</a>
-                                <a href="${pageContext.request.contextPath}/upcoming-maintenance" class="btn btn-secondary">View Upcoming Maintenance</a>
-                                <a href="${pageContext.request.contextPath}/service-history" class="btn btn-secondary">View Service History</a>
+                                <a href="<c:url value='/add-service'/>" class="btn btn-primary">Add New Service Record</a>
+                                <a href="<c:url value='/upcoming-maintenance'/>" class="btn btn-secondary">View Upcoming Maintenance</a>
+                                <a href="<c:url value='/service-history'/>" class="btn btn-secondary">View Service History</a>
                             </div>
                         </c:otherwise>
                     </c:choose>
                 </div>
                 <div class="welcome-image">
-                    <img src="${pageContext.request.contextPath}/images/car-maintenance.jpg" alt="Car Maintenance Illustration" onerror="this.style.display='none'">
+                    <img src="<c:url value='/images/car-maintenance.jpg'/>" alt="Car Maintenance Illustration" onerror="this.style.display='none'">
                 </div>
             </section>
 
@@ -102,7 +102,7 @@
                                     <p class="no-data">No recent service records found.</p>
                                 </c:if>
 
-                                <a href="${pageContext.request.contextPath}/service-history" class="view-all-link">View All Service Records</a>
+                                <a href="<c:url value='/service-history'/>" class="view-all-link">View All Service Records</a>
                             </c:if>
                         </div>
 
@@ -172,9 +172,9 @@
                 <div class="footer-section">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="${pageContext.request.contextPath}/index.jsp">Home</a></li>
-                        <li><a href="${pageContext.request.contextPath}/service-history">Service History</a></li>
-                        <li><a href="${pageContext.request.contextPath}/upcoming-maintenance">Upcoming Maintenance</a></li>
+                        <li><a href="<c:url value='/index.jsp'/>">Home</a></li>
+                        <li><a href="<c:url value='/service-history'/>">Service History</a></li>
+                        <li><a href="<c:url value='/upcoming-maintenance'/>">Upcoming Maintenance</a></li>
                     </ul>
                 </div>
 
@@ -191,6 +191,6 @@
         </footer>
     </div>
 
-    <script src="${pageContext.request.contextPath}/js/scripts.js"></script>
+    <script src="<c:url value='/js/scripts.js'/>"></script>
 </body>
 </html>

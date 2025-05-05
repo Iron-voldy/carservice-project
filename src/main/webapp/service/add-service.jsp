@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Service Record</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="<c:url value='/css/styles.css'/>">
 </head>
 <body>
     <div class="container">
@@ -13,11 +13,10 @@
             <h1>Car Service Tracker</h1>
             <nav>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/index.jsp">Home</a></li>
-                    <li><a href="${pageContext.request.contextPath}/service-history">Service History</a></li>
-                    <li><a href="${pageContext.request.contextPath}/upcoming-maintenance">Upcoming Maintenance</a></li>
-                    <li><a href="${pageContext.request.contextPath}/profile">Your Profile</a></li>
-                    <li><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
+                    <li><a href="<c:url value='/index.jsp'/>">Home</a></li>
+                    <li><a href="<c:url value='/service-history'/>">Service History</a></li>
+                    <li><a href="<c:url value='/upcoming-maintenance'/>">Upcoming Maintenance</a></li>
+                    <li><a href="<c:url value='/profile'/>">Your Profile</a></li>
                 </ul>
             </nav>
         </header>
@@ -31,7 +30,7 @@
                 </div>
             </c:if>
 
-            <form action="${pageContext.request.contextPath}/add-service" method="post">
+            <form action="<c:url value='/add-service'/>" method="post">
                 <div class="form-group">
                     <label for="carId">Car ID:</label>
                     <input type="text" id="carId" name="carId" required>
@@ -74,7 +73,7 @@
 
                 <div class="form-buttons">
                     <button type="submit" class="btn btn-primary">Add Service Record</button>
-                    <a href="${pageContext.request.contextPath}/service-history" class="btn btn-secondary">Cancel</a>
+                    <a href="<c:url value='/service-history'/>" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
         </main>
