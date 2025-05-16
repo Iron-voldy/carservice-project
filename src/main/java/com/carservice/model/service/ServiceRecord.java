@@ -142,7 +142,18 @@ public class ServiceRecord {
 
         // Calculate months until next service based on mileage interval and average miles driven
         int mileageInterval = this.serviceType.getRecommendedMileageInterval();
+
+        // Prevent division by zero
+        if (averageMilesPerMonth <= 0) {
+            averageMilesPerMonth = 1000; // Default value
+        }
+
         int monthsUntilNextService = (int) Math.ceil(mileageInterval / averageMilesPerMonth);
+
+        // Ensure we have at least 1 month interval
+        if (monthsUntilNextService < 1) {
+            monthsUntilNextService = 1;
+        }
 
         // Convert months to milliseconds (rough approximation)
         long nextServiceTime = this.serviceDate.getTime() + (monthsUntilNextService * 30L * 24 * 60 * 60 * 1000);
@@ -151,14 +162,27 @@ public class ServiceRecord {
 
     // Check if service is due or overdue
     public boolean isServiceDue() {
-        return this.nextServiceDate.before(new Date());
+        if (this.completed) {
+            return false; // Completed services are not due
+        }
+
+        Date currentDate = new Date();
+        return this.nextServiceDate.before(currentDate);
     }
 
     // Check if service will be due within a certain number of days
     public boolean isServiceDueSoon(int daysThreshold) {
+        if (this.completed) {
+            return false; // Completed services are not due soon
+        }
+
         long currentTime = System.currentTimeMillis();
         long dueSoonTime = currentTime + (daysThreshold * 24L * 60 * 60 * 1000);
-        return this.nextServiceDate.getTime() <= dueSoonTime;
+        Date thresholdDate = new Date(dueSoonTime);
+
+        // Service is due soon if it's after now but before the threshold
+        return !this.nextServiceDate.before(new Date()) &&
+                this.nextServiceDate.before(thresholdDate);
     }
 
     // Convert record to string representation for file storage

@@ -54,68 +54,67 @@ public class UpcomingMaintenanceServlet extends HttpServlet {
                 daysThreshold = Integer.parseInt(daysParam);
             } catch (NumberFormatException e) {
                 // Use default if parsing fails
+                System.err.println("Invalid days parameter: " + daysParam + ". Using default value of 30 days.");
             }
         }
 
         try {
             // Create ServiceManager
             ServiceManager serviceManager = new ServiceManager(getServletContext());
+            System.out.println("ServiceManager created successfully");
 
-            // Get upcoming maintenance records
-            ServiceLinkedList upcomingServicesLinkedList;
+            // Get all service records for this user first
+            ServiceLinkedList userServices = serviceManager.getServiceRecordsByUserId(userId);
+            System.out.println("User services retrieved: " + userServices.size());
 
+            // Filter by car if specified
+            ServiceLinkedList filteredServices = userServices;
             if (carId != null && !carId.trim().isEmpty()) {
-                // Get upcoming services for specific car
-                ServiceLinkedList carServices = serviceManager.getServiceRecordsByCarId(carId);
-                upcomingServicesLinkedList = carServices.getUpcomingServices(daysThreshold);
-            } else {
-                // Get all upcoming services for this user
-                ServiceLinkedList userServices = serviceManager.getServiceRecordsByUserId(userId);
-                upcomingServicesLinkedList = userServices.getUpcomingServices(daysThreshold);
+                filteredServices = userServices.getServicesByCarId(carId);
+                System.out.println("Filtered services by car ID: " + filteredServices.size());
             }
+
+            // Get upcoming services that are not completed
+            ServiceLinkedList upcomingServices = new ServiceLinkedList();
+            for (ServiceRecord record : filteredServices) {
+                if (!record.isCompleted() && record.isServiceDueSoon(daysThreshold)) {
+                    upcomingServices.add(record);
+                }
+            }
+            System.out.println("Upcoming services: " + upcomingServices.size());
+
+            // Get overdue services that are not completed
+            ServiceLinkedList overdueServices = new ServiceLinkedList();
+            for (ServiceRecord record : filteredServices) {
+                if (!record.isCompleted() && record.isServiceDue()) {
+                    overdueServices.add(record);
+                }
+            }
+            System.out.println("Overdue services: " + overdueServices.size());
 
             // Sort by next service date
-            ServiceSortAlgorithm.selectionSortByNextServiceDate(upcomingServicesLinkedList, true);
-
-            // Create date range for filtering (now to daysThreshold days from now)
-            Calendar cal = Calendar.getInstance();
-            Date startDate = cal.getTime();
-            cal.add(Calendar.DAY_OF_MONTH, daysThreshold);
-            Date endDate = cal.getTime();
-
-            // Get services due in the specified date range
-            ServiceLinkedList servicesDueInRangeLinkedList =
-                    ServiceSortAlgorithm.getServicesDueInRange(upcomingServicesLinkedList, startDate, endDate);
-
-            // Get overdue services
-            ServiceLinkedList overdueServicesLinkedList = serviceManager.getOverdueServices();
-            if (carId != null && !carId.trim().isEmpty()) {
-                // Filter overdue services for specific car
-                overdueServicesLinkedList = overdueServicesLinkedList.getServicesByCarId(carId);
-            } else {
-                // Filter overdue services for this user
-                overdueServicesLinkedList = overdueServicesLinkedList.getServicesByUserId(userId);
-            }
+            ServiceSortAlgorithm.selectionSortByNextServiceDate(upcomingServices, true);
+            ServiceSortAlgorithm.selectionSortByNextServiceDate(overdueServices, true);
 
             // Convert linked lists to ArrayList for JSTL compatibility
-            List<ServiceRecord> upcomingServices = new ArrayList<>();
-            for (ServiceRecord record : servicesDueInRangeLinkedList) {
-                upcomingServices.add(record);
+            List<ServiceRecord> upcomingServicesList = new ArrayList<>();
+            for (ServiceRecord record : upcomingServices) {
+                upcomingServicesList.add(record);
             }
 
-            List<ServiceRecord> overdueServices = new ArrayList<>();
-            for (ServiceRecord record : overdueServicesLinkedList) {
-                overdueServices.add(record);
+            List<ServiceRecord> overdueServicesList = new ArrayList<>();
+            for (ServiceRecord record : overdueServices) {
+                overdueServicesList.add(record);
             }
 
             // If there's no data, add sample data for demonstration
-            if (upcomingServices.isEmpty() && overdueServices.isEmpty()) {
-                upcomingServices = createSampleUpcomingServices(userId);
-                overdueServices = createSampleOverdueServices(userId);
+            if (upcomingServicesList.isEmpty() && overdueServicesList.isEmpty()) {
+                upcomingServicesList = createSampleUpcomingServices(userId);
+                overdueServicesList = createSampleOverdueServices(userId);
 
-                System.out.println("No actual service records found. Added sample data for demonstration.");
-                System.out.println("Sample upcoming services: " + upcomingServices.size());
-                System.out.println("Sample overdue services: " + overdueServices.size());
+                System.out.println("Added sample data for demonstration");
+                System.out.println("Sample upcoming services: " + upcomingServicesList.size());
+                System.out.println("Sample overdue services: " + overdueServicesList.size());
             }
 
             // Check if user is premium (for different notification methods)
@@ -126,7 +125,7 @@ public class UpcomingMaintenanceServlet extends HttpServlet {
 
             // Generate notifications for upcoming services
             StringBuilder notifications = new StringBuilder();
-            for (ServiceRecord record : upcomingServices) {
+            for (ServiceRecord record : upcomingServicesList) {
                 String notification = serviceManager.sendMaintenanceNotification(record, isPremiumUser);
                 if (notification != null) {
                     notifications.append(notification);
@@ -144,15 +143,15 @@ public class UpcomingMaintenanceServlet extends HttpServlet {
             request.setAttribute("cars", cars);
 
             // Add attributes to request
-            request.setAttribute("upcomingServices", upcomingServices);
-            request.setAttribute("overdueServices", overdueServices);
+            request.setAttribute("upcomingServices", upcomingServicesList);
+            request.setAttribute("overdueServices", overdueServicesList);
             request.setAttribute("daysThreshold", daysThreshold);
             request.setAttribute("notifications", notifications.toString());
             request.setAttribute("currentCarId", carId);
 
             // Debug information
-            System.out.println("Sending to JSP - upcoming services: " + upcomingServices.size());
-            System.out.println("Sending to JSP - overdue services: " + overdueServices.size());
+            System.out.println("Sending to JSP - upcoming services: " + upcomingServicesList.size());
+            System.out.println("Sending to JSP - overdue services: " + overdueServicesList.size());
 
             // Forward to upcoming maintenance page
             request.getRequestDispatcher("/service/upcoming-maintenance.jsp").forward(request, response);

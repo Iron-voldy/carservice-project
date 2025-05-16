@@ -28,12 +28,12 @@ public class AuthenticationFilter implements Filter {
             // Create a new session if one doesn't exist
             session = httpRequest.getSession(true);
             session.setAttribute("userId", "default-user-001");
-            session.setAttribute("username", "Test User");
+            session.setAttribute("username", "Kodagoda Puthraya");
             session.setAttribute("isPremiumUser", false);
         } else if (session.getAttribute("userId") == null) {
             // Set default user attributes if userId is not set
             session.setAttribute("userId", "default-user-001");
-            session.setAttribute("username", "Test User");
+            session.setAttribute("username", "Kodagoda Puthraya");
             session.setAttribute("isPremiumUser", false);
         }
 

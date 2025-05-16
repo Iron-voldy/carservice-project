@@ -126,10 +126,9 @@
                                         </td>
                                         <td>
                                             <span class="badge badge-danger">
-                                                <fmt:formatDate var="dueDate" value="${record.nextServiceDate}" pattern="yyyy-MM-dd" />
-                                                <fmt:parseDate var="dueDateParsed" value="${dueDate}" pattern="yyyy-MM-dd" />
                                                 <jsp:useBean id="now" class="java.util.Date" />
-                                                <fmt:formatNumber value="${(now.time - dueDateParsed.time) / (1000 * 60 * 60 * 24)}" pattern="#0" /> days
+                                                <c:set var="daysOverdue" value="${(now.time - record.nextServiceDate.time) / (1000 * 60 * 60 * 24)}" />
+                                                <fmt:formatNumber value="${daysOverdue}" pattern="#0" /> days
                                             </span>
                                         </td>
                                         <td class="actions">
@@ -137,7 +136,7 @@
                                                class="btn btn-sm btn-primary" title="Schedule">
                                                 <i class="fas fa-calendar-plus"></i> Schedule
                                             </a>
-                                            <a href="${pageContext.request.contextPath}/mark-complete?recordId=${record.recordId}"
+                                            <a href="${pageContext.request.contextPath}/mark-complete?recordId=${record.recordId}&returnUrl=/upcoming-maintenance"
                                                class="btn btn-sm btn-success" title="Mark Complete">
                                                 <i class="fas fa-check"></i> Complete
                                             </a>
@@ -180,10 +179,9 @@
                                             </td>
                                             <td>
                                                 <span class="badge badge-info">
-                                                    <fmt:formatDate var="dueDate" value="${record.nextServiceDate}" pattern="yyyy-MM-dd" />
-                                                    <fmt:parseDate var="dueDateParsed" value="${dueDate}" pattern="yyyy-MM-dd" />
                                                     <jsp:useBean id="today" class="java.util.Date" />
-                                                    <fmt:formatNumber value="${(dueDateParsed.time - today.time) / (1000 * 60 * 60 * 24)}" pattern="#0" /> days
+                                                    <c:set var="daysUntil" value="${(record.nextServiceDate.time - today.time) / (1000 * 60 * 60 * 24)}" />
+                                                    <fmt:formatNumber value="${daysUntil}" pattern="#0" /> days
                                                 </span>
                                             </td>
                                             <td>${record.serviceType.recommendedMileageInterval} miles</td>
@@ -192,7 +190,7 @@
                                                    class="btn btn-sm btn-primary" title="Reschedule">
                                                     <i class="fas fa-calendar-alt"></i> Reschedule
                                                 </a>
-                                                <a href="${pageContext.request.contextPath}/mark-complete?recordId=${record.recordId}"
+                                                <a href="${pageContext.request.contextPath}/mark-complete?recordId=${record.recordId}&returnUrl=/upcoming-maintenance"
                                                    class="btn btn-sm btn-success" title="Mark Complete">
                                                     <i class="fas fa-check"></i> Complete
                                                 </a>
@@ -261,6 +259,9 @@
                 btn.parentElement.style.display = 'none';
             });
         });
+
+        // Log to console that the page has loaded successfully
+        console.log('Upcoming maintenance page loaded successfully');
     </script>
 </body>
 </html>

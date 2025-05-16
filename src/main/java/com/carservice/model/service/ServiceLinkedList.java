@@ -34,6 +34,10 @@ public class ServiceLinkedList implements Iterable<ServiceRecord> {
 
     // Add a service record to the end of the list
     public void add(ServiceRecord record) {
+        if (record == null) {
+            return; // Don't add null records
+        }
+
         Node newNode = new Node(record);
 
         if (head == null) {
@@ -49,6 +53,10 @@ public class ServiceLinkedList implements Iterable<ServiceRecord> {
 
     // Add a service record at a specific position
     public void add(int index, ServiceRecord record) {
+        if (record == null) {
+            return; // Don't add null records
+        }
+
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
@@ -129,7 +137,7 @@ public class ServiceLinkedList implements Iterable<ServiceRecord> {
 
     // Remove a specific service record
     public boolean remove(ServiceRecord record) {
-        if (head == null) {
+        if (head == null || record == null) {
             return false;
         }
 
@@ -161,6 +169,10 @@ public class ServiceLinkedList implements Iterable<ServiceRecord> {
 
     // Find a service record by ID
     public ServiceRecord findById(String recordId) {
+        if (recordId == null) {
+            return null;
+        }
+
         Node current = head;
         while (current != null) {
             if (current.data.getRecordId().equals(recordId)) {
@@ -173,12 +185,20 @@ public class ServiceLinkedList implements Iterable<ServiceRecord> {
 
     // Filter records based on a predicate
     public ServiceLinkedList filter(Predicate<ServiceRecord> predicate) {
+        if (predicate == null) {
+            return new ServiceLinkedList(); // Return empty list if predicate is null
+        }
+
         ServiceLinkedList filteredList = new ServiceLinkedList();
 
         Node current = head;
         while (current != null) {
-            if (predicate.test(current.data)) {
-                filteredList.add(current.data);
+            try {
+                if (predicate.test(current.data)) {
+                    filteredList.add(current.data);
+                }
+            } catch (Exception e) {
+                System.err.println("Error applying predicate: " + e.getMessage());
             }
             current = current.next;
         }
@@ -188,12 +208,20 @@ public class ServiceLinkedList implements Iterable<ServiceRecord> {
 
     // Get all service records for a specific car
     public ServiceLinkedList getServicesByCarId(String carId) {
-        return filter(record -> record.getCarId().equals(carId));
+        if (carId == null) {
+            return new ServiceLinkedList(); // Return empty list if carId is null
+        }
+
+        return filter(record -> carId.equals(record.getCarId()));
     }
 
     // Get all service records for a specific user
     public ServiceLinkedList getServicesByUserId(String userId) {
-        return filter(record -> record.getUserId().equals(userId));
+        if (userId == null) {
+            return new ServiceLinkedList(); // Return empty list if userId is null
+        }
+
+        return filter(record -> userId.equals(record.getUserId()));
     }
 
     // Get upcoming service records (due within a number of days)
@@ -208,6 +236,10 @@ public class ServiceLinkedList implements Iterable<ServiceRecord> {
 
     // Update a service record
     public boolean update(ServiceRecord updatedRecord) {
+        if (updatedRecord == null) {
+            return false;
+        }
+
         Node current = head;
         while (current != null) {
             if (current.data.getRecordId().equals(updatedRecord.getRecordId())) {
@@ -221,8 +253,8 @@ public class ServiceLinkedList implements Iterable<ServiceRecord> {
 
     // Selection sort implementation for service records
     public void sort(Comparator<ServiceRecord> comparator) {
-        if (head == null || head.next == null) {
-            return; // Empty list or single element
+        if (head == null || head.next == null || comparator == null) {
+            return; // Empty list, single element, or null comparator
         }
 
         Node current = head;
@@ -232,8 +264,12 @@ public class ServiceLinkedList implements Iterable<ServiceRecord> {
 
             // Find the minimum element
             while (innerCurrent != null) {
-                if (comparator.compare(innerCurrent.data, minNode.data) < 0) {
-                    minNode = innerCurrent;
+                try {
+                    if (comparator.compare(innerCurrent.data, minNode.data) < 0) {
+                        minNode = innerCurrent;
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error comparing records: " + e.getMessage());
                 }
                 innerCurrent = innerCurrent.next;
             }
@@ -251,12 +287,30 @@ public class ServiceLinkedList implements Iterable<ServiceRecord> {
 
     // Sort by service date
     public void sortByServiceDate() {
-        sort((record1, record2) -> record1.getServiceDate().compareTo(record2.getServiceDate()));
+        sort((record1, record2) -> {
+            if (record1.getServiceDate() == null && record2.getServiceDate() == null) {
+                return 0;
+            } else if (record1.getServiceDate() == null) {
+                return -1;
+            } else if (record2.getServiceDate() == null) {
+                return 1;
+            }
+            return record1.getServiceDate().compareTo(record2.getServiceDate());
+        });
     }
 
     // Sort by next service date
     public void sortByNextServiceDate() {
-        sort((record1, record2) -> record1.getNextServiceDate().compareTo(record2.getNextServiceDate()));
+        sort((record1, record2) -> {
+            if (record1.getNextServiceDate() == null && record2.getNextServiceDate() == null) {
+                return 0;
+            } else if (record1.getNextServiceDate() == null) {
+                return -1;
+            } else if (record2.getNextServiceDate() == null) {
+                return 1;
+            }
+            return record1.getNextServiceDate().compareTo(record2.getNextServiceDate());
+        });
     }
 
     // Clear the list
@@ -268,6 +322,10 @@ public class ServiceLinkedList implements Iterable<ServiceRecord> {
 
     // Check if the list contains a specific record
     public boolean contains(ServiceRecord record) {
+        if (record == null) {
+            return false;
+        }
+
         Node current = head;
         while (current != null) {
             if (current.data.getRecordId().equals(record.getRecordId())) {

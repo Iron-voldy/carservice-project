@@ -132,7 +132,7 @@
                                     <i class="fas fa-calendar-check"></i>
                                 </div>
                                 <p>No upcoming services scheduled yet</p>
-                                <a href="${pageContext.request.contextPath}/schedule-service" class="btn btn-primary">Schedule Service</a>
+                                <a href="${pageContext.request.contextPath}/add-service" class="btn btn-primary">Schedule Service</a>
                             </div>
                         </c:if>
                         <c:if test="${not empty upcomingServices && upcomingServices.size() > 0}">
@@ -177,7 +177,7 @@
                                             <span class="alert-desc">Vehicle: ${service.carId}</span>
                                             <span class="alert-date">Due: <fmt:formatDate value="${service.nextServiceDate}" pattern="MMM dd, yyyy" /></span>
                                         </div>
-                                        <a href="${pageContext.request.contextPath}/schedule-service?recordId=${service.recordId}" class="btn btn-sm btn-danger">Schedule</a>
+                                        <a href="${pageContext.request.contextPath}/update-service?recordId=${service.recordId}" class="btn btn-sm btn-danger">Schedule</a>
                                     </li>
                                 </c:forEach>
                             </ul>
