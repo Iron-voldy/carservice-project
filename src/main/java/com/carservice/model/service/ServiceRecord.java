@@ -166,6 +166,10 @@ public class ServiceRecord {
             return false; // Completed services are not due
         }
 
+        if (this.nextServiceDate == null) {
+            return false; // No next service date set
+        }
+
         Date currentDate = new Date();
         return this.nextServiceDate.before(currentDate);
     }
@@ -176,13 +180,23 @@ public class ServiceRecord {
             return false; // Completed services are not due soon
         }
 
-        long currentTime = System.currentTimeMillis();
+        if (this.nextServiceDate == null) {
+            return false; // No next service date set
+        }
+
+        Date currentDate = new Date();
+
+        // If it's already overdue, it's not "due soon"
+        if (this.nextServiceDate.before(currentDate)) {
+            return false;
+        }
+
+        long currentTime = currentDate.getTime();
         long dueSoonTime = currentTime + (daysThreshold * 24L * 60 * 60 * 1000);
         Date thresholdDate = new Date(dueSoonTime);
 
         // Service is due soon if it's after now but before the threshold
-        return !this.nextServiceDate.before(new Date()) &&
-                this.nextServiceDate.before(thresholdDate);
+        return this.nextServiceDate.before(thresholdDate);
     }
 
     // Convert record to string representation for file storage

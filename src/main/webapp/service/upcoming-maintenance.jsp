@@ -23,13 +23,13 @@
             </div>
             <nav class="nav-links">
                 <a href="${pageContext.request.contextPath}/index.jsp" class="nav-link">
-                    <i class="fas fa-home"></i> Services
+                    <i class="fas fa-home"></i> Dashboard
                 </a>
                 <a href="${pageContext.request.contextPath}/service-history" class="nav-link">
-                    <i class="fas fa-car"></i> My Vehicles
+                    <i class="fas fa-history"></i> Service History
                 </a>
                 <a href="${pageContext.request.contextPath}/upcoming-maintenance" class="nav-link active">
-                    <i class="fas fa-history"></i> History
+                    <i class="fas fa-calendar-alt"></i> Upcoming Maintenance
                 </a>
             </nav>
             <div class="user-section">
@@ -40,7 +40,6 @@
                     </button>
                     <div class="dropdown-content">
                         <a href="${pageContext.request.contextPath}/profile">Profile</a>
-                        <a href="${pageContext.request.contextPath}/logout">Logout</a>
                     </div>
                 </div>
             </div>

@@ -23,34 +23,25 @@
             </div>
             <nav class="nav-links">
                 <a href="${pageContext.request.contextPath}/index.jsp" class="nav-link active">
-                    <i class="fas fa-home"></i> Services
+                    <i class="fas fa-home"></i> Dashboard
                 </a>
                 <a href="${pageContext.request.contextPath}/service-history" class="nav-link">
-                    <i class="fas fa-car"></i> My Vehicles
+                    <i class="fas fa-history"></i> Service History
                 </a>
                 <a href="${pageContext.request.contextPath}/upcoming-maintenance" class="nav-link">
-                    <i class="fas fa-history"></i> History
+                    <i class="fas fa-calendar-alt"></i> Upcoming Maintenance
                 </a>
             </nav>
             <div class="user-section">
-                <c:choose>
-                    <c:when test="${empty sessionScope.userId}">
-                        <a href="${pageContext.request.contextPath}/login" class="btn btn-outline">Login</a>
-                        <a href="${pageContext.request.contextPath}/register" class="btn btn-outline">Register</a>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="dropdown">
-                            <button class="btn btn-outline dropdown-toggle">
-                                <i class="fas fa-user-circle"></i> ${sessionScope.username}
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="dropdown-content">
-                                <a href="${pageContext.request.contextPath}/profile">Profile</a>
-                                <a href="${pageContext.request.contextPath}/logout">Logout</a>
-                            </div>
-                        </div>
-                    </c:otherwise>
-                </c:choose>
+                <div class="dropdown">
+                    <button class="btn btn-outline dropdown-toggle">
+                        <i class="fas fa-user-circle"></i> ${sessionScope.username}
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="${pageContext.request.contextPath}/profile">Profile</a>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -88,33 +79,41 @@
                 </div>
                 <div class="welcome-text">
                     <h2>Welcome back, ${sessionScope.username}!</h2>
-                    <p>You have upcoming services and alerts</p>
+                    <p>Monitor your vehicle maintenance and keep track of service records</p>
                 </div>
             </div>
 
             <!-- Dashboard Cards -->
             <div class="dashboard-cards">
-                <!-- Vehicles Card -->
+                <!-- Service History Card -->
                 <div class="dashboard-card">
                     <div class="card-header">
-                        <h3>Vehicles</h3>
+                        <h3>Service History</h3>
+                        <i class="fas fa-history"></i>
                     </div>
                     <div class="card-body">
-                        <c:if test="${empty vehicles}">
+                        <c:if test="${empty recentServices || recentServices.size() == 0}">
                             <div class="empty-state">
-                                <p>No vehicles added yet</p>
-                                <a href="${pageContext.request.contextPath}/add-vehicle" class="btn btn-outline-primary">Add Vehicle</a>
+                                <div class="empty-icon">
+                                    <i class="fas fa-history"></i>
+                                </div>
+                                <p>No service records found</p>
+                                <a href="${pageContext.request.contextPath}/add-service" class="btn btn-primary">Add Service Record</a>
                             </div>
                         </c:if>
-                        <c:if test="${not empty vehicles}">
-                            <ul class="vehicle-list">
-                                <c:forEach var="vehicle" items="${vehicles}">
+                        <c:if test="${not empty recentServices && recentServices.size() > 0}">
+                            <ul class="service-list">
+                                <c:forEach var="service" items="${recentServices}" end="4">
                                     <li>
-                                        <span class="vehicle-name">${vehicle.make} ${vehicle.model}</span>
-                                        <span class="vehicle-year">${vehicle.year}</span>
+                                        <div class="service-info">
+                                            <span class="service-type">${service.serviceType.description}</span>
+                                            <span class="service-date"><fmt:formatDate value="${service.serviceDate}" pattern="MMM dd, yyyy" /></span>
+                                        </div>
+                                        <span class="service-car">${service.carId}</span>
                                     </li>
                                 </c:forEach>
                             </ul>
+                            <a href="${pageContext.request.contextPath}/service-history" class="view-all">View All</a>
                         </c:if>
                     </div>
                 </div>
@@ -131,7 +130,7 @@
                                 <div class="empty-icon">
                                     <i class="fas fa-calendar-check"></i>
                                 </div>
-                                <p>No upcoming services scheduled yet</p>
+                                <p>No upcoming services scheduled</p>
                                 <a href="${pageContext.request.contextPath}/add-service" class="btn btn-primary">Schedule Service</a>
                             </div>
                         </c:if>
@@ -141,7 +140,7 @@
                                     <li>
                                         <div class="service-info">
                                             <span class="service-type">${service.serviceType.description}</span>
-                                            <span class="service-date"><fmt:formatDate value="${service.serviceDate}" pattern="MMM dd, yyyy" /></span>
+                                            <span class="service-date"><fmt:formatDate value="${service.nextServiceDate}" pattern="MMM dd, yyyy" /></span>
                                         </div>
                                         <span class="service-car">${service.carId}</span>
                                     </li>
@@ -155,7 +154,7 @@
                 <!-- Alerts Card -->
                 <div class="dashboard-card alert-card">
                     <div class="card-header">
-                        <h3>Urgent Alerts</h3>
+                        <h3>Overdue Services</h3>
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
                     <div class="card-body">
@@ -164,7 +163,7 @@
                                 <div class="empty-icon">
                                     <i class="fas fa-check-circle"></i>
                                 </div>
-                                <p>No urgent alerts at this time</p>
+                                <p>No overdue services at this time</p>
                             </div>
                         </c:if>
                         <c:if test="${not empty overdueServices && overdueServices.size() > 0}">
@@ -190,7 +189,7 @@
             <!-- Recent Services Section -->
             <section class="recent-services">
                 <div class="section-header">
-                    <h2>Recent Services</h2>
+                    <h2><i class="fas fa-history"></i> Recent Services</h2>
                     <a href="${pageContext.request.contextPath}/service-history" class="view-all">View All</a>
                 </div>
                 <c:if test="${empty recentServices || recentServices.size() == 0}">
