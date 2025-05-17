@@ -44,12 +44,17 @@ public class MarkCompleteServlet extends HttpServlet {
         String returnUrl = request.getParameter("returnUrl");
         if (returnUrl == null || returnUrl.trim().isEmpty()) {
             // Default return URL
-            returnUrl = request.getContextPath() + "/service-history";
-        } else {
-            // Make sure return URL is relative for security
-            if (returnUrl.startsWith("http") || returnUrl.startsWith("//")) {
-                returnUrl = request.getContextPath() + "/service-history";
-            }
+            returnUrl = "/service-history";
+        }
+
+        // Make sure return URL is relative and starts with "/"
+        if (!returnUrl.startsWith("/")) {
+            returnUrl = "/" + returnUrl;
+        }
+
+        // Remove context path if it's already included in returnUrl
+        if (returnUrl.startsWith(request.getContextPath())) {
+            returnUrl = returnUrl.substring(request.getContextPath().length());
         }
 
         try {
@@ -67,14 +72,14 @@ public class MarkCompleteServlet extends HttpServlet {
                 session.setAttribute("errorMessage", "Failed to mark service record as completed. Please try again.");
             }
 
-            // Redirect back to the appropriate page
-            response.sendRedirect(returnUrl);
+            // Redirect back to the appropriate page with the context path added
+            response.sendRedirect(request.getContextPath() + returnUrl);
         } catch (Exception e) {
             // Handle errors
             System.err.println("Error in MarkCompleteServlet: " + e.getMessage());
             e.printStackTrace();
             session.setAttribute("errorMessage", "An error occurred: " + e.getMessage());
-            response.sendRedirect(returnUrl);
+            response.sendRedirect(request.getContextPath() + returnUrl);
         }
     }
 }

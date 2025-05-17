@@ -57,6 +57,22 @@
             </div>
 
             <!-- Alert Messages -->
+            <c:if test="${not empty sessionScope.successMessage}">
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> ${sessionScope.successMessage}
+                    <button class="close-btn"><i class="fas fa-times"></i></button>
+                </div>
+                <c:remove var="successMessage" scope="session" />
+            </c:if>
+
+            <c:if test="${not empty sessionScope.errorMessage}">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i> ${sessionScope.errorMessage}
+                    <button class="close-btn"><i class="fas fa-times"></i></button>
+                </div>
+                <c:remove var="errorMessage" scope="session" />
+            </c:if>
+
             <c:if test="${not empty errorMessage}">
                 <div class="alert alert-danger">
                     <i class="fas fa-exclamation-circle"></i> ${errorMessage}

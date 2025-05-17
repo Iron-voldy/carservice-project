@@ -272,7 +272,7 @@
         <footer class="footer">
             <div class="footer-content">
                 <p>&copy; 2025 CarCare - Car Service Maintenance Tracker</p>
-                <div class="footer-links">
+<div class="footer-links">
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms of Service</a>
                     <a href="#">Contact Us</a>

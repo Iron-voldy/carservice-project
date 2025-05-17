@@ -113,6 +113,10 @@ public class ServiceManager {
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(dataFilePath))) {
                 for (ServiceRecord record : serviceRecords) {
+                    // Skip sample records (SR001-SR005)
+                    if (record.getRecordId().startsWith("SR00")) {
+                        continue;
+                    }
                     writer.write(record.toFileString());
                     writer.newLine();
                 }
@@ -149,6 +153,19 @@ public class ServiceManager {
 
     // Get service record by ID
     public ServiceRecord getServiceRecordById(String recordId) {
+        // Handle sample records (SR001-SR005)
+        if (recordId != null && recordId.startsWith("SR00")) {
+            // These are sample records, return a new record with default values
+            ServiceRecord sampleRecord = new ServiceRecord();
+            sampleRecord.setRecordId(recordId);
+            sampleRecord.setCarId(recordId.equals("SR001") || recordId.equals("SR004") ? "CAR001" :
+                    recordId.equals("SR002") ? "CAR002" : "CAR003");
+            sampleRecord.setUserId("default-user-001");
+            sampleRecord.setServiceType(ServiceType.OIL_CHANGE);
+            sampleRecord.setCompleted(false);
+            return sampleRecord;
+        }
+
         return serviceRecords.findById(recordId);
     }
 
@@ -169,6 +186,13 @@ public class ServiceManager {
 
     // Update a service record
     public boolean updateServiceRecord(ServiceRecord updatedRecord) {
+        // Handle sample records (SR001-SR005)
+        if (updatedRecord != null && updatedRecord.getRecordId() != null &&
+                updatedRecord.getRecordId().startsWith("SR00")) {
+            // Don't update sample records in the file, just return success
+            return true;
+        }
+
         boolean updated = serviceRecords.update(updatedRecord);
         if (updated) {
             return saveServiceRecords();
@@ -178,6 +202,12 @@ public class ServiceManager {
 
     // Delete a service record
     public boolean deleteServiceRecord(String recordId) {
+        // Handle sample records (SR001-SR005)
+        if (recordId != null && recordId.startsWith("SR00")) {
+            // Don't delete sample records, just return success
+            return true;
+        }
+
         ServiceRecord record = getServiceRecordById(recordId);
         if (record != null) {
             boolean removed = serviceRecords.remove(record);
@@ -211,6 +241,12 @@ public class ServiceManager {
 
     // Mark a service as completed
     public boolean markServiceAsCompleted(String recordId) {
+        // Handle sample records (SR001-SR005)
+        if (recordId != null && recordId.startsWith("SR00")) {
+            // Don't update sample records in the file, just return success
+            return true;
+        }
+
         ServiceRecord record = getServiceRecordById(recordId);
         if (record != null) {
             record.setCompleted(true);
@@ -221,6 +257,12 @@ public class ServiceManager {
 
     // Reschedule a service
     public boolean rescheduleService(String recordId, Date newDate) {
+        // Handle sample records (SR001-SR005)
+        if (recordId != null && recordId.startsWith("SR00")) {
+            // Don't update sample records in the file, just return success
+            return true;
+        }
+
         ServiceRecord record = getServiceRecordById(recordId);
         if (record != null) {
             record.setServiceDate(newDate);
